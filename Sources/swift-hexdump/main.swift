@@ -17,6 +17,12 @@
 
 import Cocoa
 
+var slavikSymbols: [(String, String)] = [
+    ("a","а"),("b","б"),
+    ("c","в"),("d","г"),
+    ("e","д"),("f","е")
+]
+
 /// Split a sequence into equal-size chunks and process each chunk.
 ///
 /// Each chunk will have the specified number of elements, except for the last chunk,
@@ -71,7 +77,24 @@ public func hexStringForBytes<S: Sequence>(bytes: S) -> String where S.Iterator.
 /// - returns: A one-character `String` containing the printable representation, or "." if it is not printable.
 
 public func printableCharacterForByte(byte: UInt8) -> String {
-  return (isprint(Int32(byte)) != 0) ? String(UnicodeScalar(byte)) : "."
+    let printable = isprint(Int32(byte)) != 0;
+    
+    if (printable) {
+        let result = String(UnicodeScalar(byte))
+        var temp = ""
+        for (_, char) in result.enumerated() {
+            if let actual = Int(String(char)) {
+                temp += String(actual);
+            } else {
+                temp += slavikSymbols.first(where: (pair: (String, String)) -> Bool {
+                    return String(char) == pair.left
+                })
+            }
+        }
+        return result
+    } else {
+        return ".";
+    }
 }
 
 /// Get printable representation of an array of characters.
